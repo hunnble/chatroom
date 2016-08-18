@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=0" name="viewport">
+    <title>聊天室呦呵呵呵</title>
+    <link rel="stylesheet" href="css/style.css" media="screen">
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <section id="chatbox">
+      <header class="header">
+        <h3>在线聊天室</h3>
+        <p>当前共有<span id="onlineCount"></span>人在线</p>
+        <button id="logout">退出</button>
+      </header>
+      <div id="msgs">
+
+      </div>
+      <div class="inputbox">
+        <input type="text" maxlength="140" placeholder="请输入聊天内容" id="input" name="input">
+        <button id="sendMessage">提交</button>
+      </div>
+    </section>
+    <script src="js/client.js"></script>
+  </body>
+</html>
