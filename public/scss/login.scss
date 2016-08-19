@@ -1,0 +1,21 @@
+#loginbox {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  padding-top: 30%;
+  width: 100%;
+  background-color: $skyBlue;
+}
+#username {
+  -webkit-appearance: none;
+  display: block;
+  margin: 5% auto;
+  max-width: 400px;
+  width: 80%;
+}
+#sendUsername {
+  @include btn(#0ab86f, $white, 20%);
+  display: block;
+  margin: 0 auto;
+  min-width: 64px;
+}

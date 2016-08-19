@@ -36,7 +36,6 @@ app.get('/login', function (req, res) {
 });
 
 app.post('/login', function (req, res) {
-  console.log(req.body);
   if (onlineUsers.hasOwnProperty(req.body.username)) {
     res.redirect('/login');
   } else {
@@ -46,13 +45,10 @@ app.post('/login', function (req, res) {
 });
 
 io.on('connection', function (socket) {
-  console.log('新用户已连接');
   socket.on('login', function (obj) {
     socket.name = obj.username;
-    // if (!onlineUsers.hasOwnProperty(obj.userid)) {
-      onlineUsers[obj.username] = obj.username;
-      onlineCount += 1;
-    // }
+    onlineUsers[obj.username] = obj.username;
+    onlineCount += 1;
     io.emit('login', {
       onlineUsers: onlineUsers,
       onlineCount: onlineCount,

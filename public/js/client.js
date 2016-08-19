@@ -17,6 +17,7 @@ Chat.prototype.scrollToBottom = function () {
 };
 
 Chat.prototype.logout = function () {
+  delCookie('user');
   this.socket.disconnect();
   location.reload();
 };
@@ -75,11 +76,11 @@ Chat.prototype.init = function (username) {
     var isSelf = obj.username === self.username;
     var msgDOM = document.createElement('div');
     if (isSelf) {
-      msgDOM.className = 'user';
-      msgDOM.innerHTML = obj.message + obj.username;
+      msgDOM.className = 'message-user';
+      msgDOM.innerHTML = '<span class="msg">' + obj.message + '</span><span class="speaker">' + obj.username + '</span>';
     } else {
-      msgDOM.className = 'others';
-      msgDOM.innerHTML = obj.username + obj.message;
+      msgDOM.className = 'message-others';
+      msgDOM.innerHTML = '<span class="speaker">' + obj.username + '</span><span class="msg">' + obj.message + '</span>';
     }
     self.msgObj.appendChild(msgDOM);
     self.scrollToBottom();
@@ -95,11 +96,21 @@ function getCookie(name) {
   return null;
 }
 
+function delCookie (name) {
+  var targetCookie = getCookie(name);
+  var exp = new Date();
+  exp.setTime(exp.getTime() - 1);
+  if (targetCookie !== null) {
+    document.cookie = name + '=' + targetCookie + ';expires=' + exp.toGMTString();
+  }
+}
+
 window.onload = function () {
   var chat = new Chat();
   var username = getCookie('user');
   var sendMessageBtn = document.getElementById('sendMessage');
   var logoutBtn = document.getElementById('logout');
+  var input = document.getElementById('input');
 
   if (!username) {
     console.log('加载失败，请刷新重试。');
@@ -112,6 +123,13 @@ window.onload = function () {
   };
   logoutBtn.onclick = function () {
     chat.logout();
+  };
+  input.oninput = function (e) {
+    var len = e.target.value.length;
+    if (len > 140) {
+      e.target.value = e.target.value.substr(0, 140);
+      return false;
+    }
   };
 
 };

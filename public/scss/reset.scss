@@ -1,0 +1,65 @@
+html, body {
+  height: 100%;
+}
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,
+form,fieldset,input,textarea,p,blockquote,th,td, button {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: 100% "Segoe UI", "Lucida Grande", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+  word-break: break-all;
+  outline: 0;
+}
+ol, ul {
+  list-style: none;
+}
+a {
+  color: $skyBlue;
+  text-decoration: none;
+}
+span {
+  display: inline-block;
+}
+img, object {
+  max-width: 100%;
+}
+@for $i from 1 through 6 {
+  h#{$i} {
+    font-size: (2.25rem-0.25rem*$i);
+  }
+}
+@mixin linearTopToBottom($topBg, $bottomBg) {
+  background: $topBg;
+  background: -webkit-linear-gradient(top, $topBg 0%, $bottomBg);
+  background: -moz-linear-gradient(top, $topBg 0%, $bottomBg);
+  background: -ms-linear-gradient(top, $topBg 0%, $bottomBg);
+  background: -o-linear-gradient(top, $topBg 0%, $bottomBg);
+  background: linear-gradient(top, $topBg 0%, $bottomBg);
+}
+@mixin btn($bgColor, $color, $amount: 10%) {
+  @include linearTopToBottom($bgColor, lighten($bgColor, $amount));
+  -webkit-appearance: none;
+  border: 0;
+  outline: 0;
+  border-radius: 2rem;
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  font-size: 0.75rem;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, $bgColor), color-stop(100%, lighten($bgColor, $amount)));
+  color: $color;
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    -webkit-box-shadow: 0 0 0.25rem $bgColor;
+    -moz-box-shadow: 0 0 0.25rem $bgColor;
+    box-shadow: 0 0 0.25rem $bgColor;
+  }
+}
+input[type=submit], input[type=button], button {
+  @include btn($btnColor, $white);
+}
+input[type=text], textarea {
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}

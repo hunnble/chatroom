@@ -1,0 +1,84 @@
+#chatbox {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  .title {
+    @include linearTopToBottom(darken($skyBlue, 10%), $skyBlue);
+    height: 4rem;
+    line-height: 4rem;
+    text-align: center;
+    color: $white;
+    font-weight: bold;
+  }
+  .curCount {
+    @include linearTopToBottom($skyBlue, lighten($skyBlue, 40%));
+    height: 3rem;
+    line-height: 2rem;
+    text-align: right;
+    font-size: 0.75rem;
+  }
+  #onlineCount {
+    color: $red;
+  }
+  #logout {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+  #msgs {
+    font-size: 0.875rem;
+    @each $iden in system, user, others {
+      .message-#{$iden} {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        width: 100%;
+        color: $white;
+      }
+    }
+    .message-system {
+      border-radius: 0.4rem;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0.25rem;
+      width: 50%;
+      background-color: transparentize($grey, 0.5);
+      text-align: center;
+      font-size: 0.75rem;
+    }
+    .message-user {
+      text-align: right;
+    }
+    .message-others {
+      text-align: left;
+    }
+    .speaker {
+      margin: auto 1rem;
+      color: $black;
+    }
+    .msg {
+      border-radius: 0.4rem;
+      padding: 0.5rem 1rem;
+      background-color: $green;
+      max-width: 50%;
+      text-align: center;
+    }
+  }
+  .inputbox {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }
+  #input {
+    float: left;
+    margin-left: 5%;
+    width: 60%;
+    height: 6rem;
+    resize: none;
+  }
+  #sendMessage {
+    margin-bottom: 2.5rem;
+    margin-left: 5%;
+    width: 6rem;
+    height: 2rem;
+  }
+}
