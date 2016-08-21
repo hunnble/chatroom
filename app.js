@@ -76,8 +76,18 @@ io.on('connection', function (socket) {
     if (!obj.isImage) {
       obj.message = xss(obj.message.replace('\n', '<br />'));
     }
-    io.emit('message', obj);
-    console.log(obj.username + ' 发言了');
+    if (obj.to === 'all') {
+      io.emit('message', obj);
+      console.log(obj.username + ' 发言了');
+    } else {
+      var sockets = io.sockets.sockets;
+      for(var key in sockets) {
+        if (sockets[key].name === obj.to || sockets[key].name === obj.username) {
+          sockets[key].emit('message', obj);
+          console.log(obj.username + ' 对 ' + obj.to + ' 发送私密消息');
+        }
+      }
+    }
   });
 });
 

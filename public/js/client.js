@@ -24,13 +24,16 @@ Chat.prototype.logout = function () {
 
 Chat.prototype.sendMessage = function () {
   var input = document.getElementById('input');
+  var userList = document.getElementById('userList');
   var message = input.value;
-  if (message === '') {
+  if (/[^\n]/.test(message) === false) {
     return false;
   }
   var newMsg = {
     username: this.username,
-    message: message
+    isImage: false,
+    message: message,
+    to: userList.value
   }
   this.socket.emit('message', newMsg);
   input.value = '';
@@ -38,6 +41,7 @@ Chat.prototype.sendMessage = function () {
 
 Chat.prototype.sendImage = function (file) {
   var self = this;
+  var userList = document.getElementById('userList');
   var reader = new FileReader();
   if (!file || !reader || !/image\/\w+/.test(file.type)) {
     return false;
@@ -47,7 +51,8 @@ Chat.prototype.sendImage = function (file) {
     var newMsg = {
       username: self.username,
       isImage: true,
-      message: '<a href="' + e.target.result + '" target="_blank"><img class="message-image" src="' + e.target.result + '" alt="" /></a>'
+      message: '<a href="' + e.target.result + '" target="_blank"><img class="message-image" src="' + e.target.result + '" alt="" /></a>',
+      to: userList.value
     };
     self.socket.emit('message', newMsg);
   };
@@ -74,10 +79,25 @@ Chat.prototype.updateSysMsg = function (obj, action) {
   this.scrollToBottom();
 };
 
+Chat.prototype.renderUserList = function (onlineUsers) {
+  var userList = document.getElementById('userList');
+  var fragment = document.createDocumentFragment();
+  userList.innerHTML = '<option value="all">所有人</option>';
+  for(var key in onlineUsers) {
+    if (onlineUsers[key] === this.username) {
+      continue;
+    }
+    var option = document.createElement('option');
+    option.value = onlineUsers[key];
+    option.innerHTML = onlineUsers[key];
+    fragment.appendChild(option);
+  }
+  userList.appendChild(fragment);
+};
+
 Chat.prototype.init = function (username) {
   var self = this;
   this.username = username;
-  // this.msgObj.style.minHeight = this.screenHeight + this.msgObj.clientHeight + 'px';
   this.scrollToBottom();
   this.socket = io.connect('127.0.0.1:3000');
   this.socket.emit('login', {
@@ -85,9 +105,11 @@ Chat.prototype.init = function (username) {
   });
   this.socket.on('login', function (obj) {
     self.updateSysMsg(obj, 'login');
+    self.renderUserList(obj.onlineUsers);
   });
   this.socket.on('logout', function (obj) {
     self.updateSysMsg(obj, 'logout');
+    self.renderUserList(obj.onlineUsers);
   });
   this.socket.on('message', function (obj) {
     var isSelf = obj.username === self.username;

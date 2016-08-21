@@ -194,7 +194,7 @@ input[type=text], textarea {
       padding: 0.5rem 1rem;
       background-color: #57e932;
       max-width: 50%;
-      text-align: center; }
+      text-align: left; }
   #chatbox .inputbox {
     position: fixed;
     bottom: 0;
