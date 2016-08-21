@@ -22,7 +22,7 @@ Chat.prototype.logout = function () {
   location.reload();
 };
 
-Chat.prototype.submit = function () {
+Chat.prototype.sendMessage = function () {
   var input = document.getElementById('input');
   var message = input.value;
   if (message === '') {
@@ -34,6 +34,23 @@ Chat.prototype.submit = function () {
   }
   this.socket.emit('message', newMsg);
   input.value = '';
+};
+
+Chat.prototype.sendImage = function (file) {
+  var self = this;
+  var reader = new FileReader();
+  if (!file || !reader || !/image\/\w+/.test(file.type)) {
+    return false;
+  }
+  reader.readAsDataURL(file);
+  reader.onload = function (e) {
+    var newMsg = {
+      username: self.username,
+      isImage: true,
+      message: '<a href="' + e.target.result + '" target="_blank"><img class="message-image" src="' + e.target.result + '" alt="" /></a>'
+    };
+    self.socket.emit('message', newMsg);
+  };
 };
 
 Chat.prototype.updateSysMsg = function (obj, action) {
@@ -60,7 +77,7 @@ Chat.prototype.updateSysMsg = function (obj, action) {
 Chat.prototype.init = function (username) {
   var self = this;
   this.username = username;
-  this.msgObj.style.minHeight = this.screenHeight - documentBody.clientHeight + this.msgObj.clientHeight;
+  // this.msgObj.style.minHeight = this.screenHeight + this.msgObj.clientHeight + 'px';
   this.scrollToBottom();
   this.socket = io.connect('127.0.0.1:3000');
   this.socket.emit('login', {
@@ -109,6 +126,7 @@ window.onload = function () {
   var chat = new Chat();
   var username = getCookie('user');
   var sendMessageBtn = document.getElementById('sendMessage');
+  var sendImageBtn = document.getElementById('sendImage');
   var logoutBtn = document.getElementById('logout');
   var input = document.getElementById('input');
 
@@ -119,8 +137,13 @@ window.onload = function () {
   chat.init(username);
 
   sendMessageBtn.onclick = function () {
-    chat.submit();
+    chat.sendMessage();
   };
+  sendImageBtn.onchange = function () {
+    var file = this.files[0];
+    chat.sendImage(file);
+    this.value = '';
+  }
   logoutBtn.onclick = function () {
     chat.logout();
   };
@@ -129,6 +152,12 @@ window.onload = function () {
     if (len > 140) {
       e.target.value = e.target.value.substr(0, 140);
       return false;
+    }
+  };
+  window.onkeydown = function (e) {
+    if (e.ctrlKey && e.keyCode === 13 && document.activeElement === input) {
+      e.preventDefault();
+      chat.sendMessage();
     }
   };
 

@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var http = require('http');
 var socketio = require('socket.io');
+var xss = require('xss');
 
 var app = express();
 var port = 3000;
@@ -54,7 +55,7 @@ io.on('connection', function (socket) {
       onlineCount: onlineCount,
       user: obj
     });
-    console.log(obj.username + '进入了聊天室，热烈欢迎');
+    console.log(obj.username + '进入了聊天室');
   });
   socket.on('disconnect', function () {
     if (onlineUsers.hasOwnProperty(socket.name)) {
@@ -68,12 +69,15 @@ io.on('connection', function (socket) {
         onlineCount: onlineCount,
         user: obj
       });
-      console.log(obj.username + '离开了聊天室，鼓掌欢送');
+      console.log(obj.username + '离开了聊天室');
     }
   });
   socket.on('message', function (obj) {
+    if (!obj.isImage) {
+      obj.message = xss(obj.message.replace('\n', '<br />'));
+    }
     io.emit('message', obj);
-    console.log(obj.username + ' : ' + obj.message);
+    console.log(obj.username + ' 发言了');
   });
 });
 
