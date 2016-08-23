@@ -45,6 +45,7 @@ app.post('/login', function (req, res) {
   }
 });
 
+io.binaryType = 'arraybuffer';
 io.on('connection', function (socket) {
   socket.on('login', function (obj) {
     socket.name = obj.username;
@@ -73,7 +74,7 @@ io.on('connection', function (socket) {
     }
   });
   socket.on('message', function (obj) {
-    if (!obj.isImage) {
+    if (obj.type === 'text') {
       obj.message = xss(obj.message.replace('\n', '<br />'));
     }
     if (obj.to === 'all') {

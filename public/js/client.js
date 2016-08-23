@@ -37,7 +37,7 @@ Chat.prototype.sendMessage = function () {
   }
   var newMsg = {
     username: this.username,
-    isImage: false,
+    type: 'text',
     message: message,
     to: userList.value
   }
@@ -56,8 +56,8 @@ Chat.prototype.sendImage = function (file) {
   reader.onload = function (e) {
     var newMsg = {
       username: self.username,
-      isImage: true,
-      message: '<a href="' + e.target.result + '" target="_blank"><img class="message-image" src="' + e.target.result + '" alt="" /></a>',
+      type: 'image',
+      message: e.target.result,
       to: userList.value
     };
     self.socket.emit('message', newMsg);
@@ -103,25 +103,48 @@ Chat.prototype.sendVoice = function () {
     var index = 44;
     var buffer = new ArrayBuffer(index + len * 2);
     var view = new DataView(buffer);
+    // RIFF标志
     writeUTFBytes(view, 0, 'RIFF');
+    // 文件长度
     view.setUint32(4, index + len * 2, true);
+    // WAVE标志
     writeUTFBytes(view, 8, 'WAVE');
+    // fmt标志
     writeUTFBytes(view, 12, 'fmt');
+    // 过渡字节， 一般为0x10（16）
     view.setUint32(16, 16, true);
+    // 格式类别（PCH）
     view.setUint16(20, 1, true);
+    // 通道数
     view.setUint16(22, 2, true);
+    // 采样率
     view.setUint32(24, self.sampleRate, true);
+    // 波形音频数据传送速率：通道数＊每样本的数据位数／8
     view.setUint32(28, self.sampleRate * 4, true);
+    // 数据块调整数：通道数＊每样本的数据数（16）／8
     view.setUint16(32, 4, true);
+    // 每样本的数据位数
     view.setUint16(34, 16, true);
+    // 数据标记符：data
     writeUTFBytes(view, 36, 'data');
+    // 语音数据长度
     view.setUint32(40, len * 2, true);
     for (var i = 0; i < len; ++i) {
       view.setInt16(index, interleaved[i] * 0x7FFF, true);
       index += 2;
     }
     var blob = new Blob([view], { type: 'audio/wav' });
-    console.log(blob);
+    var newMsg = {
+      username: self.username,
+      type: 'voice',
+      message: blob,
+      to: userList.value
+    };
+    self.socket.emit('message', newMsg);
+    // var audio = document.createElement('audio');
+    // audio.src = window.URL.createObjectURL(blob);
+    // audio.controls = true;
+    // self.msgObj.appendChild(audio);
 
     self.isRecording = false;
     self.leftChannel = [];
@@ -184,9 +207,22 @@ Chat.prototype.init = function (username) {
     self.updateSysMsg(obj, 'logout');
     self.renderUserList(obj.onlineUsers);
   });
-  this.socket.on('message', function (obj) {
+  this.socket.on('message', function (obj) {console.dir(obj);
     var isSelf = obj.username === self.username;
     var msgDOM = document.createElement('div');
+    switch (obj.type) {
+      case 'image':
+        var src = obj.message;
+        obj.message = '<a href="' + src + '" target="_blank"><img class="message-image" src="' + src + '" alt="" /></a>'
+        break;
+      case 'voice':
+        var blob = new Blob([obj.message]);
+        var url = window.URL.createObjectURL(blob);
+        obj.message = '<audio class="voice" controls src="' + url + '">对不起,无法播放语音</audio>';
+        break;
+      default:
+        break;
+    }
     if (isSelf) {
       msgDOM.className = 'message-user';
       msgDOM.innerHTML = '<span class="msg">' + obj.message + '</span><span class="speaker">' + obj.username + '</span>';
@@ -253,11 +289,12 @@ window.onload = function () {
               window.webkitAudioContext ||
               window.mozAudioContext ||
               window.msAudioContext ;
+  window.URL = window.URL || window.webkitURL;
   navigator.getUserMedia = navigator.getUserMedia ||
               navigator.webkitGetUserMedia ||
               navigator.mozGetUserMedia ||
               navigator.msGetUserMedia ;
-  if (!window.AudioContext || !navigator.getUserMedia) {
+  if (!window.AudioContext || !navigator.getUserMedia || !window.URL) {
     document.getElementById('sendVoice').style.display = 'none';
   }
 
