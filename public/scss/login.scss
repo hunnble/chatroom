@@ -2,20 +2,24 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  padding-top: 30%;
   width: 100%;
   background-color: $skyBlue;
+  >div {
+    position: absolute;
+    top: 40%;
+    width: 100%;
+  }
 }
 #username {
   -webkit-appearance: none;
   display: block;
-  margin: 5% auto;
-  max-width: 400px;
+  margin: 0 auto;
   width: 80%;
+  max-width: 400px;
 }
 #sendUsername {
   @include btn(#0ab86f, $white, 20%);
   display: block;
-  margin: 0 auto;
+  margin: 5% auto auto;
   min-width: 64px;
 }

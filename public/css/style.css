@@ -75,16 +75,19 @@ input[type=text], textarea {
   position: absolute;
   top: 0;
   bottom: 0;
-  padding-top: 30%;
   width: 100%;
   background-color: #00B7FF; }
+  #loginbox > div {
+    position: absolute;
+    top: 40%;
+    width: 100%; }
 
 #username {
   -webkit-appearance: none;
   display: block;
-  margin: 5% auto;
-  max-width: 400px;
-  width: 80%; }
+  margin: 0 auto;
+  width: 80%;
+  max-width: 400px; }
 
 #sendUsername {
   background: #0ab86f;
@@ -105,7 +108,7 @@ input[type=text], textarea {
   text-align: center;
   cursor: pointer;
   display: block;
-  margin: 0 auto;
+  margin: 5% auto auto;
   min-width: 64px; }
   #sendUsername:hover {
     -webkit-box-shadow: 0 0 0.25rem #0ab86f;

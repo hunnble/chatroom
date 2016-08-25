@@ -36,11 +36,11 @@ Chat.prototype.sendMessage = function () {
     return false;
   }
   var newMsg = {
-    username: this.username,
+    from: this.username,
     type: 'text',
     message: message,
     to: userList.value
-  }
+  };
   this.socket.emit('message', newMsg);
   input.value = '';
 };
@@ -55,7 +55,7 @@ Chat.prototype.sendImage = function (file) {
   reader.readAsDataURL(file);
   reader.onload = function (e) {
     var newMsg = {
-      username: self.username,
+      from: self.username,
       type: 'image',
       message: e.target.result,
       to: userList.value
@@ -135,17 +135,12 @@ Chat.prototype.sendVoice = function () {
     }
     var blob = new Blob([view], { type: 'audio/wav' });
     var newMsg = {
-      username: self.username,
+      from: self.username,
       type: 'voice',
       message: blob,
       to: userList.value
     };
     self.socket.emit('message', newMsg);
-    // var audio = document.createElement('audio');
-    // audio.src = window.URL.createObjectURL(blob);
-    // audio.controls = true;
-    // self.msgObj.appendChild(audio);
-
     self.isRecording = false;
     self.leftChannel = [];
     self.rightChannel = [];
@@ -157,19 +152,11 @@ Chat.prototype.sendVoice = function () {
 Chat.prototype.updateSysMsg = function (obj, action) {
   var onlineCountDOM = document.getElementById('onlineCount');
   var onlineUsers = obj.onlineUsers;
-  var onlineCount = obj.onlineCount;
   var user = obj.user;
-  var users = '';
   var separator = '';
-  for (var key in onlineUsers) {
-    if (onlineUsers.hasOwnProperty(key)) {
-      users += separator + onlineUsers[key];
-      separator = '、';
-    }
-  }
-  onlineCountDOM.innerHTML = onlineCount;
   var sysMsgDOM = document.createElement('div');
-  sysMsgDOM.innerHTML = user.username + (action === 'login' ? '加入' : '退出') + '聊天室';
+  onlineCountDOM.innerHTML = onlineUsers.length;
+  sysMsgDOM.innerHTML = user.from + (action === 'login' ? '加入' : '退出') + '聊天室';
   sysMsgDOM.className = 'message-system';
   this.msgObj.appendChild(sysMsgDOM);
   this.scrollToBottom();
@@ -179,13 +166,13 @@ Chat.prototype.renderUserList = function (onlineUsers) {
   var userList = document.getElementById('userList');
   var fragment = document.createDocumentFragment();
   userList.innerHTML = '<option value="all">所有人</option>';
-  for(var key in onlineUsers) {
-    if (onlineUsers[key] === this.username) {
+  for(var i = 0; i < onlineUsers.length; ++i) {
+    if (onlineUsers[i] === this.username) {
       continue;
     }
     var option = document.createElement('option');
-    option.value = onlineUsers[key];
-    option.innerHTML = onlineUsers[key];
+    option.value = onlineUsers[i];
+    option.innerHTML = onlineUsers[i];
     fragment.appendChild(option);
   }
   userList.appendChild(fragment);
@@ -197,7 +184,7 @@ Chat.prototype.init = function (username) {
   this.scrollToBottom();
   this.socket = io.connect('127.0.0.1:3000');
   this.socket.emit('login', {
-    username: this.username
+    from: this.username
   });
   this.socket.on('login', function (obj) {
     self.updateSysMsg(obj, 'login');
@@ -207,8 +194,8 @@ Chat.prototype.init = function (username) {
     self.updateSysMsg(obj, 'logout');
     self.renderUserList(obj.onlineUsers);
   });
-  this.socket.on('message', function (obj) {console.dir(obj);
-    var isSelf = obj.username === self.username;
+  this.socket.on('message', function (obj) {
+    var isSelf = obj.from === self.username;
     var msgDOM = document.createElement('div');
     switch (obj.type) {
       case 'image':
@@ -218,17 +205,17 @@ Chat.prototype.init = function (username) {
       case 'voice':
         var blob = new Blob([obj.message]);
         var url = window.URL.createObjectURL(blob);
-        obj.message = '<audio class="voice" controls src="' + url + '">对不起,无法播放语音</audio>';
+        obj.message = '<audio class="voice" controls="true" autoplay src="' + url + '">对不起,无法播放语音</audio>';
         break;
       default:
         break;
     }
     if (isSelf) {
       msgDOM.className = 'message-user';
-      msgDOM.innerHTML = '<span class="msg">' + obj.message + '</span><span class="speaker">' + obj.username + '</span>';
+      msgDOM.innerHTML = '<span class="msg">' + obj.message + '</span><span class="speaker">' + obj.from + '</span>';
     } else {
       msgDOM.className = 'message-others';
-      msgDOM.innerHTML = '<span class="speaker">' + obj.username + '</span><span class="msg">' + obj.message + '</span>';
+      msgDOM.innerHTML = '<span class="speaker">' + obj.from + '</span><span class="msg">' + obj.message + '</span>';
     }
     self.msgObj.appendChild(msgDOM);
     self.scrollToBottom();

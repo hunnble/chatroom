@@ -9,9 +9,12 @@
   "author": "noski",
   "license": "MIT",
   "dependencies": {
+    "async": "^2.0.1",
+    "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.1",
     "express": "^4.14.0",
+    "redis": "^2.6.2",
     "socket.io": "^1.4.8",
     "xss": "^0.2.13"
   }
