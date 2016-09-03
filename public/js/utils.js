@@ -2,7 +2,7 @@ function getCookie(name) {
   var reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
   var result = document.cookie.match(reg);
   if (result) {
-    return unescape(result[2]);
+    return decodeURI(result[2]);
   }
   return null;
 }
