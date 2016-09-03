@@ -56,6 +56,11 @@ img, object {
     box-shadow: 0 0 0.25rem $bgColor;
   }
 }
+@mixin box-shadow($x, $y, $len, $color) {
+  -webkit-box-shadow: $x $y $len $color;
+  -moz-box-shadow: $x $y $len $color;
+  box-shadow: $x $y $len $color;
+}
 input[type=submit], input[type=button], button {
   @include btn($btnColor, $white);
 }

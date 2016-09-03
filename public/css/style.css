@@ -135,6 +135,61 @@ input[type=text], textarea {
     text-align: center;
     color: #fff;
     font-weight: bold; }
+  #chatbox #getRooms {
+    margin-left: 0.5rem; }
+  #chatbox #rooms {
+    -webkit-box-shadow: 0 0 5px #161211;
+    -moz-box-shadow: 0 0 5px #161211;
+    box-shadow: 0 0 5px #161211;
+    overflow: hidden;
+    position: fixed;
+    top: 6.5rem;
+    right: 2rem;
+    border-radios: 5px;
+    margin-left: -5rem;
+    width: 14rem;
+    height: 12rem;
+    background-color: #fff; }
+    #chatbox #rooms .hideRoomBtn {
+      display: inline-block;
+      float: right;
+      border-radius: 50%;
+      margin-top: 0.25rem;
+      margin-right: 0.5rem;
+      height: 1rem;
+      line-height: 1rem;
+      width: 1rem;
+      color: #eb2323;
+      text-align: center;
+      cursor: pointer; }
+      #chatbox #rooms .hideRoomBtn:hover {
+        background-color: #eb2323;
+        color: #fff; }
+    #chatbox #rooms > input[type=text] {
+      border-bottom: 1px solid #161211;
+      border-radius: 0;
+      display: inline-block;
+      margin: 1.5rem 0.25rem;
+      width: 4rem;
+      height: 1rem; }
+    #chatbox #rooms button {
+      display: inline-block;
+      margin: 1.5rem auto 0.25rem;
+      padding: auto 0.25rem; }
+    #chatbox #rooms #roomsList {
+      overflow-y: scroll; }
+    #chatbox #rooms .room {
+      -webkit-transition: background-color 0.2s ease-in;
+      -moz-transition: background-color 0.2s ease-in;
+      -o-transition: background-color 0.2s ease-in;
+      transition: background-color 0.2s ease-in;
+      float: left;
+      padding: 5%;
+      width: 40%;
+      text-align: center;
+      cursor: pointer; }
+      #chatbox #rooms .room:hover {
+        background-color: #f2f2f2; }
   #chatbox .curCount {
     background: #00B7FF;
     background: -webkit-linear-gradient(top, #00B7FF 0%, #ccf1ff);
@@ -144,6 +199,7 @@ input[type=text], textarea {
     background: linear-gradient(top, #00B7FF 0%, #ccf1ff);
     position: fixed;
     top: 4rem;
+    margin-top: -1px;
     width: 100%;
     height: 3rem;
     line-height: 2rem;
@@ -211,7 +267,7 @@ input[type=text], textarea {
     height: 6rem;
     resize: none; }
   #chatbox #sendMessage, #chatbox .sendImageWrapper {
-    margin: 1rem auto;
+    margin: 1rem auto 0;
     width: 5rem;
     height: 2rem; }
   #chatbox .sendImageWrapper {

@@ -11,21 +11,25 @@
     <section id="chatbox">
       <header class="header">
         <h3 class="title">在线聊天室</h3>
-        <p class="curCount">当前共有<span id="onlineCount"></span>人在线<button id="logout">退出</button></p>
+        <p class="curCount">当前共有<span id="onlineCount"></span>人在线<button id="getRooms">房间列表</button><button id="logout">退出</button></p>
+        <div id="rooms" style="display:none;">
+          <span class="hideRoomBtn">×</span>
+          <input type="text" name="newRoomName" placeholder="" />
+          <button type="button" class="createRoomBtn">直接进入</button>
+          <div id="roomsList"></div>
+        </div>
       </header>
-      <div id="msgs">
-
-      </div>
+      <div id="msgs"></div>
       <div class="inputbox">
         <textarea placeholder="请输入聊天内容, ctrl+enter快捷发送" id="input" name="input"></textarea>
         <select id="userList" name="userList">
           <option value="all">所有人</option>
         </select>
-        <input type="button" id="sendVoice" value="语音" />
-        <button id="sendMessage">提交</button>
+        <button id="sendMessage">发送</button>
         <button class="sendImageWrapper">图片<input type="file" id="sendImage" /></button>
       </div>
     </section>
-    <script src="js/client.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/chat.js"></script>
   </body>
 </html>

@@ -1,61 +1,105 @@
-var redis = require('redis');
+var mongoose = require('mongoose');
+var config = require('../config.js');
+var Schema = mongoose.Schema;
+var db = mongoose.createConnection(config.mongoHost, config.mongoName);
 
-var USERS_SET_NAME = 'chatusers';
-var port = 6379;
-var host = '127.0.0.1';
-
-var redisClient = redis.createClient(port, host);
-
-redisClient.on('error', function (err) {
-  console.log('redis error: ' + err);
+db.on('error', function (err) {
+    console.log('数据库连接失败: ' + err);
 });
 
-var userModel = {
-  addUser: function (username, callback) {
-    redisClient.sadd(USERS_SET_NAME, username, function (err) {
-      if (err) {
-        callback(err);
-      } else {
-        callback();
-      }
-    });
-  },
-  isMember: function (username, callback) {
-    redisClient.sismember(USERS_SET_NAME, username, function (err, res) {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, res);
-      }
-    });
-  },
-  getUser: function (username, callback) {
-    this.isMember(username, function (err, res) {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, username);
-      }
-    });
-  },
-  getAllUsers: function (callback) {
-    redisClient.smembers(USERS_SET_NAME, function (err, users) {
-      if (err || !users) {
-        callback(err);
-      } else {
-        callback(null, users);
-      }
-    });
-  },
-  removeUser: function (username, callback) {
-    redisClient.srem(USERS_SET_NAME, username, function (err) {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null);
-      }
-    });
+var userSchema = new Schema({
+  username: { type: String },
+  roomId: {
+    type: String,
+    default: 'all'
   }
+});
+
+userSchema.statics.getUser = function (username, callback) {
+  this.findOne({ 'username': username }, function (err, result) {
+    if (err) {
+      callback(err);
+    } else {
+      callback(null, result.username);
+    }
+  });
+};
+userSchema.statics.getAllUsers = function (roomId, callback) {
+  var op = {};
+  if (roomId) {
+    op.roomId = roomId;
+  }
+  this.find(op, function (err, result) {
+    if (err) {
+      callback(err);
+    } else {
+      result = result.map(function (user) {
+        return user.username;
+      });
+      callback(null, result);
+    }
+  });
+};
+userSchema.statics.addUser = function (username, callback) {
+  this.create({
+    'username': username
+  }, function (err) {
+    if (err) {
+      callback(err);
+    } else {
+      callback(null);
+    }
+  });
+};
+userSchema.statics.removeUser = function (username, callback) {
+  this.remove({
+    'username': username
+  }, function (err) {
+    if (err) {
+      callback(err);
+    } else {
+      callback(null, username);
+    }
+  });
+};
+userSchema.statics.getRoomName = function (username, callback) {
+  this.findOne({
+    'username': username
+  }, function (err, result) {
+    if (err) {
+      callback(err);
+    } else {
+      callback(null, result.roomId);
+    }
+  });
+}
+userSchema.statics.changeRoom = function (username, roomId, callback) {
+  this.update({
+    'username': username
+  }, {
+    'roomId': roomId
+  }, function (err) {
+    if (err) {
+      callback(err);
+    } else {
+      callback(null);
+    }
+  });
+};
+userSchema.statics.leaveRoom = function (callback) {
+  this.statics.changeRoom('', callback);
+};
+userSchema.statics.isMember = function (username, callback) {
+  this.find({
+    'username': username
+  }, function (err, result) {
+    if (err) {
+      callback(err);
+    } else {
+      var exist = !!result[0];
+      callback(null, exist);
+    }
+  });
 };
 
-module.exports = userModel;
+module.exports = db.model('chatUser', userSchema);
